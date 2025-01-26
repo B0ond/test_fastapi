@@ -1,0 +1,8 @@
+.git/
+.venv/
+README.md
+__pycache__/
+.env
+.idea
+poetry.lock
+pyproject.toml
