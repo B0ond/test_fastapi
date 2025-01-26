@@ -28,7 +28,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-@app.get("/doctors/{doctor_id}", response_model=DoctorSchema, tags=["doctors"])
+@app.get("/doctors/{doctor_id}", response_model=DoctorSchema, tags=["doctors 👨🏻‍🔬"])
 async def read_doctor(doctor_id: int, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Doctor).filter(Doctor.id == doctor_id))
@@ -41,7 +41,7 @@ async def read_doctor(doctor_id: int, db: AsyncSession = Depends(async_get_db)):
         raise HTTPException(status_code=404, detail=f"Doctor with id={doctor_id} not found")
 
 
-@app.get("/doctors/name/{doctor_name}", response_model=list[DoctorSchema], tags=["doctors"])
+@app.get("/doctors/name/{doctor_name}", response_model=list[DoctorSchema], tags=["doctors 👨🏻‍🔬"])
 async def read_doctor_by_name(doctor_name: str, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Doctor).filter(Doctor.name == doctor_name))
@@ -54,7 +54,7 @@ async def read_doctor_by_name(doctor_name: str, db: AsyncSession = Depends(async
         raise HTTPException(status_code=404, detail=f"Doctor with name={doctor_name} not found")
 
 
-@app.post("/doctors/", response_model=DoctorSchema, tags=["doctors"])
+@app.post("/doctors/", response_model=DoctorSchema, tags=["doctors 👨🏻‍🔬"])
 async def create_doctor(doctor: DoctorSchema, db: AsyncSession = Depends(async_get_db)):
     try:
         if doctor.clinic_id is not None:
@@ -76,7 +76,7 @@ async def create_doctor(doctor: DoctorSchema, db: AsyncSession = Depends(async_g
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.put("/doctors/{doctor_id}", response_model=DoctorSchema, tags=["doctors"])
+@app.put("/doctors/{doctor_id}", response_model=DoctorSchema, tags=["doctors 👨🏻‍🔬"])
 async def update_doctor(doctor_id: int, doctor: DoctorSchema, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Doctor).filter(Doctor.id == doctor_id))
@@ -94,7 +94,7 @@ async def update_doctor(doctor_id: int, doctor: DoctorSchema, db: AsyncSession =
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.delete("/doctors/{doctor_id}", response_model=dict, tags=["doctors"])
+@app.delete("/doctors/{doctor_id}", response_model=dict, tags=["doctors 👨🏻‍🔬"])
 async def delete_doctor(doctor_id: int, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Doctor).filter(Doctor.id == doctor_id))
@@ -113,7 +113,7 @@ async def delete_doctor(doctor_id: int, db: AsyncSession = Depends(async_get_db)
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
 
-@app.get("/patients/{patient_id}", response_model=PatientSchema, tags=["patients"])
+@app.get("/patients/{patient_id}", response_model=PatientSchema, tags=["patients 🙆‍♂️"])
 async def read_patient(patient_id: int, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Patient).filter(Patient.id == patient_id))
@@ -126,7 +126,7 @@ async def read_patient(patient_id: int, db: AsyncSession = Depends(async_get_db)
         raise HTTPException(status_code=404, detail=f"Patient with id={patient_id} not found")
 
 
-@app.get("/patients/name/{patient_name}", response_model=list[PatientSchema], tags=["patients"])
+@app.get("/patients/name/{patient_name}", response_model=list[PatientSchema], tags=["patients 🙆‍♂️"])
 async def read_patient_by_name(patient_name: str, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Patient).filter(Patient.name == patient_name))
@@ -139,7 +139,7 @@ async def read_patient_by_name(patient_name: str, db: AsyncSession = Depends(asy
         raise HTTPException(status_code=404, detail=f"Patient with name={patient_name} not found")
 
 
-@app.post("/patients/", response_model=PatientSchema, tags=["patients"])
+@app.post("/patients/", response_model=PatientSchema, tags=["patients 🙆‍♂️"])
 async def create_patient(patient: PatientSchema, db: AsyncSession = Depends(async_get_db)):
     try:
         if patient.doctor_id is not None:
@@ -172,7 +172,7 @@ async def create_patient(patient: PatientSchema, db: AsyncSession = Depends(asyn
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.put("/patients/{patient_id}", response_model=PatientSchema, tags=["patients"])
+@app.put("/patients/{patient_id}", response_model=PatientSchema, tags=["patients 🙆‍♂️"])
 async def update_patient(patient_id: int, patient: PatientSchema, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Patient).filter(Patient.id == patient_id))
@@ -210,7 +210,7 @@ async def update_patient(patient_id: int, patient: PatientSchema, db: AsyncSessi
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.delete("/patients/{patient_id}", response_model=dict, tags=["patients"])
+@app.delete("/patients/{patient_id}", response_model=dict, tags=["patients 🙆‍♂️"])
 async def delete_patient(patient_id: int, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Patient).filter(Patient.id == patient_id))
@@ -229,7 +229,7 @@ async def delete_patient(patient_id: int, db: AsyncSession = Depends(async_get_d
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
 
-@app.get("/clinics/{clinic_id}", response_model=ClinicSchema, tags=["clinics"])
+@app.get("/clinics/{clinic_id}", response_model=ClinicSchema, tags=["clinics 🏥"])
 async def read_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Clinic).filter(Clinic.id == clinic_id))
@@ -242,7 +242,7 @@ async def read_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
         raise HTTPException(status_code=404, detail=f"Clinic  with id={clinic_id} not found")
 
 
-@app.get("/clinics/name/{clinic_name}", response_model=ClinicSchema, tags=["clinics"])
+@app.get("/clinics/name/{clinic_name}", response_model=ClinicSchema, tags=["clinics 🏥"])
 async def read_clinic_by_name(clinic_name: str, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Clinic).filter(Clinic.name == clinic_name))
@@ -255,7 +255,7 @@ async def read_clinic_by_name(clinic_name: str, db: AsyncSession = Depends(async
         raise HTTPException(status_code=404, detail=f"Clinic  with name={clinic_name} not found")
 
 
-@app.post("/clinics/", response_model=ClinicSchema, tags=["clinics"])
+@app.post("/clinics/", response_model=ClinicSchema, tags=["clinics 🏥"])
 async def create_clinic(clinic: ClinicSchema, db: AsyncSession = Depends(async_get_db)):
     try:
         db_clinic = Clinic(name=clinic.name, address=clinic.address)
@@ -269,7 +269,7 @@ async def create_clinic(clinic: ClinicSchema, db: AsyncSession = Depends(async_g
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.put("/clinics/{clinic_id}", response_model=ClinicSchema, tags=["clinics"])
+@app.put("/clinics/{clinic_id}", response_model=ClinicSchema, tags=["clinics 🏥"])
 async def update_clinic(clinic_id: int, clinic: ClinicSchema, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Clinic).filter(Clinic.id == clinic_id))
@@ -287,7 +287,7 @@ async def update_clinic(clinic_id: int, clinic: ClinicSchema, db: AsyncSession =
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.delete("/clinics/{clinic_id}", response_model=dict, tags=["clinics"])
+@app.delete("/clinics/{clinic_id}", response_model=dict, tags=["clinics 🏥"])
 async def delete_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Clinic).filter(Clinic.id == clinic_id))
@@ -305,7 +305,7 @@ async def delete_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)
         await db.rollback()
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@app.get("/appointments/{appointment_id}", response_model=AppointmentSchema, tags=["appointments"])
+@app.get("/appointments/{appointment_id}", response_model=AppointmentSchema, tags=["appointments 📲"])
 async def read_appointment(appointment_id: int, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Appointment).filter(Appointment.id == appointment_id))
@@ -318,7 +318,7 @@ async def read_appointment(appointment_id: int, db: AsyncSession = Depends(async
         raise HTTPException(status_code=404, detail=f"Appointment with id={appointment_id} not found")
 
 
-@app.post("/appointments/", response_model=AppointmentSchema, tags=["appointments"])
+@app.post("/appointments/", response_model=AppointmentSchema, tags=["appointments 📲"])
 async def create_appointment(appointment: AppointmentSchema, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Doctor).filter(Doctor.id == appointment.doctor_id))
@@ -357,7 +357,7 @@ async def create_appointment(appointment: AppointmentSchema, db: AsyncSession = 
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.put("/appointments/{appointment_id}", response_model=AppointmentSchema, tags=["appointments"])
+@app.put("/appointments/{appointment_id}", response_model=AppointmentSchema, tags=["appointments 📲"])
 async def update_appointment(
     appointment_id: int, 
     appointment: AppointmentSchema, 
@@ -408,7 +408,7 @@ async def update_appointment(
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.delete("/appointments/{appointment_id}", response_model=dict, tags=["appointments"])
+@app.delete("/appointments/{appointment_id}", response_model=dict, tags=["appointments 📲"])
 async def delete_appointment(appointment_id: int, db: AsyncSession = Depends(async_get_db)):
     try:
         result = await db.execute(select(Appointment).filter(Appointment.id == appointment_id))
