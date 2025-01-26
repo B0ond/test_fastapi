@@ -43,6 +43,14 @@ async def read_doctor_by_name(doctor_name: str, db: AsyncSession = Depends(async
 
 @app.post("/doctors/", response_model=DoctorSchema)
 async def create_doctor(doctor: DoctorSchema, db: AsyncSession = Depends(async_get_db)):
+    if doctor.clinic_id is not None:
+        result = await db.execute(select(Clinic).filter(Clinic.id == doctor.clinic_id))
+        clinic = result.scalars().first()
+        if clinic is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Clinic with id={doctor.clinic_id} not found"
+            )
     db_doctor = Doctor(name=doctor.name, clinic_id=doctor.clinic_id)
     db.add(db_doctor)
     await db.commit()
