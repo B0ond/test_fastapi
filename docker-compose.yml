@@ -4,20 +4,27 @@ services:
   app:
     build: .
     container_name: fastapi_app
-    env_file: .env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/postgres
     ports:
       - "8000:8000"
     depends_on:
       - db
     volumes:
-      - .:/app
+      - ./app:/app/app 
 
   db:
     image: postgres:15
     container_name: postgres_db
-    env_file: .env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
     ports:
-      - "5437:5437"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
