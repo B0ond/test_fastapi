@@ -18,8 +18,11 @@
 
 ## Установка и запуск
 
-1. **Клонируйте репозиторий из докерхаба:**
+1. **Скачать образ из докерхаба:**
 - docker pull b0ond/test_fastapi-app:latest
+2. **Клонируйте репозиторий с гитхаба в любую папку:**
 - git clone https://github.com/B0ond/test_fastapi.git
+3. **переходите в папку с проектом:**
 - cd test_fastapi
+4. **Запускаете:**
 - docker-compose up
