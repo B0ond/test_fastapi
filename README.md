@@ -20,3 +20,4 @@
 
 1. **Клонируйте репозиторий из докерхаба:**
 docker pull b0ond/test_fastapi-app
+docker-compose up
