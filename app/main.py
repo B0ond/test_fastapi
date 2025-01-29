@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from .database import async_get_db, engine
-from .schemas import DoctorSchema, PatientSchema, ClinicSchema, AppointmentSchema
-from .models import Doctor, Patient, Base, Clinic, Appointment
+from database import async_get_db, engine
+from schemas import DoctorSchema, PatientSchema, ClinicSchema, AppointmentSchema
+from models import Doctor, Patient, Base, Clinic, Appointment
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 async def create_tables():
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)  # Удаляет все таблицы (что бы не мусорить)
         await conn.run_sync(Base.metadata.create_all)  # Создает все таблицы
 
 @asynccontextmanager
