@@ -4,11 +4,14 @@ services:
   app:
     build: .
     container_name: fastapi_app
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
-      DATABASE_URL: postgresql+asyncpg://postgres:password@db:5432/postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      DATABASE_URL: postgresql${DB_TYPE}://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+     
     ports:
       - "8000:8000"
     depends_on:
@@ -19,12 +22,14 @@ services:
   db:
     image: postgres:15
     container_name: postgres_db
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "${DB_HOST_PORT}:5432"  # первый это внешний порт: второй это порт внутри докера
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
