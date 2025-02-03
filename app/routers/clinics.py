@@ -25,6 +25,12 @@ async def read_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
         )
 
 
+# @router.get("/clinics/", response_model=ClinicSchema)
+# async def read_clinics(db: AsyncSession = Depends(async_get_db)):
+#     pass
+    
+
+
 @router.get("/clinics/name/{clinic_name}", response_model=ClinicSchema)
 async def read_clinic_by_name(
     clinic_name: str, db: AsyncSession = Depends(async_get_db)

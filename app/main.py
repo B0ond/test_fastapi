@@ -12,13 +12,17 @@ logger = logging.getLogger(__name__)
 
 async def create_tables():
     async with engine.begin() as conn:
+        logger.info("Создание таблиц...")
         await conn.run_sync(Base.metadata.create_all)  # Создает все таблицы
+        logger.info("Таблицы созданы")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Запуск приложения...")
     await create_tables()  # Выполняется при старте приложения
     yield
+    logger.info("Остановка приложения...")
     await engine.dispose()  # Выполняется при завершении работы приложения
 
 
