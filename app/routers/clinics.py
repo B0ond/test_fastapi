@@ -12,40 +12,29 @@ logger = logging.getLogger(__name__)
 
 @router.get("/clinics/{clinic_id}", response_model=ClinicSchema)
 async def read_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
-    try:
-        result = await db.execute(select(Clinic).filter(Clinic.id == clinic_id))
-        clinic = result.scalars().first()
-        if clinic is None:
-            raise HTTPException(status_code=404, detail="Clinic not found")
-        return clinic
-    except Exception as e:
-        logger.error(f"Error reading clinic with id={clinic_id}: {e}")
-        raise HTTPException(
-            status_code=404, detail=f"Clinic  with id={clinic_id} not found"
-        )
+    clinic = await db.execute(select(Clinic).filter(Clinic.id == clinic_id))
+    clinic = clinic.scalars().one_or_none()
+    if clinic is None:
+        raise HTTPException(status_code=404, detail="Clinic not found")
+    return clinic
 
 
-# @router.get("/clinics/", response_model=ClinicSchema)
-# async def read_clinics(db: AsyncSession = Depends(async_get_db)):
-#     pass
-    
+@router.get("/clinics/", response_model=list[ClinicSchema])
+async def read_clinics(db: AsyncSession = Depends(async_get_db)):
+    clinics = await db.execute(select(Clinic))
+    return clinics.scalars().all()
+
 
 
 @router.get("/clinics/name/{clinic_name}", response_model=ClinicSchema)
 async def read_clinic_by_name(
     clinic_name: str, db: AsyncSession = Depends(async_get_db)
 ):
-    try:
-        result = await db.execute(select(Clinic).filter(Clinic.name == clinic_name))
-        clinic = result.scalars().first()
-        if not clinic:
-            raise HTTPException(status_code=404, detail="Clinic name not found")
-        return clinic
-    except Exception as e:
-        logger.error(f"Error reading clinic by name={clinic_name}: {e}")
-        raise HTTPException(
-            status_code=404, detail=f"Clinic  with name={clinic_name} not found"
-        )
+    result = await db.execute(select(Clinic).filter(Clinic.name == clinic_name))
+    clinic = result.scalars().one_or_none()
+    if not clinic:
+        raise HTTPException(status_code=404, detail="Clinic name not found")
+    return clinic
 
 
 @router.post("/clinics/", response_model=ClinicSchema)
