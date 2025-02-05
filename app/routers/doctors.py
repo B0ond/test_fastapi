@@ -10,36 +10,30 @@ router = APIRouter(prefix="/doctors", tags=["doctors 👨🏻‍🔬"])
 logger = logging.getLogger(__name__)
 
 
+@router.get("/doctors/", response_model=list[DoctorSchema])
+async def get_all_doctors(db: AsyncSession = Depends(async_get_db)):
+    doctors = await db.execute(select(Doctor))
+    return doctors.scalars().all()
+
+
 @router.get("/doctors/{doctor_id}", response_model=DoctorSchema)
-async def read_doctor(doctor_id: int, db: AsyncSession = Depends(async_get_db)):
-    try:
-        result = await db.execute(select(Doctor).filter(Doctor.id == doctor_id))
-        doctor = result.scalars().first()
-        if doctor is None:
-            raise HTTPException(status_code=404, detail="Doctor not found")
-        return doctor
-    except Exception as e:
-        logger.error(f"Error reading doctor with id={doctor_id}: {e}")
-        raise HTTPException(
-            status_code=404, detail=f"Doctor with id={doctor_id} not found"
-        )
+async def read_doctor_by_id(doctor_id: int, db: AsyncSession = Depends(async_get_db)):
+    result = await db.execute(select(Doctor).filter(Doctor.id == doctor_id))
+    doctor = result.scalars().first()
+    if doctor is None:
+        raise HTTPException(status_code=404, detail="Doctor not found")
+    return doctor
 
 
 @router.get("/doctors/name/{doctor_name}", response_model=list[DoctorSchema])
 async def read_doctor_by_name(
     doctor_name: str, db: AsyncSession = Depends(async_get_db)
 ):
-    try:
-        result = await db.execute(select(Doctor).filter(Doctor.name == doctor_name))
-        doctors = result.scalars().all()
-        if not doctors:
-            raise HTTPException(status_code=404, detail="Doctor name not found")
-        return doctors
-    except Exception as e:
-        logger.error(f"Error reading doctor by name={doctor_name}: {e}")
-        raise HTTPException(
-            status_code=404, detail=f"Doctor with name={doctor_name} not found"
-        )
+    result = await db.execute(select(Doctor).filter(Doctor.name == doctor_name))
+    doctors = result.scalars().all()
+    if not doctors:
+        raise HTTPException(status_code=404, detail="Doctor name not found")
+    return doctors
 
 
 @router.post("/doctors/", response_model=DoctorSchema)
@@ -61,9 +55,9 @@ async def create_doctor(doctor: DoctorSchema, db: AsyncSession = Depends(async_g
         await db.refresh(db_doctor)
         return db_doctor
     except Exception as e:
-        logger.error(f"Error creating doctor: {e}")
+        logger.error("Error creating doctor: %s", e)
         await db.rollback()
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e
 
 
 @router.put("/doctors/{doctor_id}", response_model=DoctorSchema)
@@ -81,9 +75,9 @@ async def update_doctor(
         await db.refresh(db_doctor)
         return db_doctor
     except Exception as e:
-        logger.error(f"Error updating doctor with id={doctor_id}: {e}")
+        logger.error("Error updating doctor with id=%s: %s", doctor_id, e)
         await db.rollback()
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e
 
 
 @router.delete("/doctors/{doctor_id}", response_model=dict)
@@ -93,13 +87,11 @@ async def delete_doctor(doctor_id: int, db: AsyncSession = Depends(async_get_db)
         db_doctor = result.scalars().first()
         if db_doctor is None:
             raise HTTPException(status_code=404, detail="Doctor not found")
-
         await db.delete(db_doctor)
         await db.commit()
-
-        logger.info(f"Doctor with id={doctor_id} has been deleted.")
+        logger.info("Doctor with id=%s has been deleted.", doctor_id)
         return {"detail": f"Doctor with id={doctor_id} deleted successfully"}
     except Exception as e:
-        logger.error(f"Error deleting doctor with id={doctor_id}: {e}")
+        logger.error("Error deleting doctor with id=%s: %s", doctor_id, e)
         await db.rollback()
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e

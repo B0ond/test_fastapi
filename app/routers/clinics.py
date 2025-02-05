@@ -10,8 +10,16 @@ router = APIRouter(prefix="/clinics", tags=["clinics 🏥"])
 logger = logging.getLogger(__name__)
 
 
+# вывод всех клиник
+@router.get("/clinics/", response_model=list[ClinicSchema])
+async def get_all_clinics(db: AsyncSession = Depends(async_get_db)):
+    clinics = await db.execute(select(Clinic))
+    return clinics.scalars().all()
+
+
+# вывод клиник по id
 @router.get("/clinics/{clinic_id}", response_model=ClinicSchema)
-async def read_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
+async def read_clinic_by_id(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
     clinic = await db.execute(select(Clinic).filter(Clinic.id == clinic_id))
     clinic = clinic.scalars().one_or_none()
     if clinic is None:
@@ -19,13 +27,7 @@ async def read_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
     return clinic
 
 
-@router.get("/clinics/", response_model=list[ClinicSchema])
-async def read_clinics(db: AsyncSession = Depends(async_get_db)):
-    clinics = await db.execute(select(Clinic))
-    return clinics.scalars().all()
-
-
-
+# вывод клиник по имени
 @router.get("/clinics/name/{clinic_name}", response_model=ClinicSchema)
 async def read_clinic_by_name(
     clinic_name: str, db: AsyncSession = Depends(async_get_db)
@@ -37,6 +39,7 @@ async def read_clinic_by_name(
     return clinic
 
 
+# создание клиники
 @router.post("/clinics/", response_model=ClinicSchema)
 async def create_clinic(clinic: ClinicSchema, db: AsyncSession = Depends(async_get_db)):
     try:
@@ -46,11 +49,12 @@ async def create_clinic(clinic: ClinicSchema, db: AsyncSession = Depends(async_g
         await db.refresh(db_clinic)
         return db_clinic
     except Exception as e:
-        logger.error(f"Error creating clinic: {e}")
+        logger.error("Error creating clinic: %s", e)
         await db.rollback()
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e
 
 
+# изменнение клиники
 @router.put("/clinics/{clinic_id}", response_model=ClinicSchema)
 async def update_clinic(
     clinic_id: int, clinic: ClinicSchema, db: AsyncSession = Depends(async_get_db)
@@ -66,11 +70,12 @@ async def update_clinic(
         await db.refresh(db_clinic)
         return db_clinic
     except Exception as e:
-        logger.error(f"Error updating clinic with id={clinic_id}: {e}")
+        logger.error("Error updating clinic with id=%s: %s", clinic_id, e)
         await db.rollback()
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e
 
 
+# удаление клиники
 @router.delete("/clinics/{clinic_id}", response_model=dict)
 async def delete_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
     try:
@@ -82,9 +87,9 @@ async def delete_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)
         await db.delete(db_clinic)
         await db.commit()
 
-        logger.info(f"Clinic with id={clinic_id} has been deleted.")
+        logger.info("Clinic with id=%s has been deleted.", clinic_id)
         return {"detail": f"Clinic with id={clinic_id} deleted successfully"}
     except Exception as e:
-        logger.error(f"Error deleting clinic with id={clinic_id}: {e}")
+        logger.error("Error deleting clinic with id=%s: %s", clinic_id, e)
         await db.rollback()
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Server Error") from e
