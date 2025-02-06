@@ -20,8 +20,7 @@ async def get_all_clinics(db: AsyncSession = Depends(async_get_db)):
 # вывод клиник по id
 @router.get("/clinics/{clinic_id}", response_model=ClinicSchema)
 async def read_clinic_by_id(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
-    clinic = await db.execute(select(Clinic).filter(Clinic.id == clinic_id))
-    clinic = clinic.scalars().one_or_none()
+    clinic = await db.get(Clinic, clinic_id)
     if clinic is None:
         raise HTTPException(status_code=404, detail="Clinic not found")
     return clinic
@@ -42,16 +41,11 @@ async def read_clinic_by_name(
 # создание клиники
 @router.post("/clinics/", response_model=ClinicSchema)
 async def create_clinic(clinic: ClinicSchema, db: AsyncSession = Depends(async_get_db)):
-    try:
-        db_clinic = Clinic(name=clinic.name, address=clinic.address)
-        db.add(db_clinic)
-        await db.commit()
-        await db.refresh(db_clinic)
-        return db_clinic
-    except Exception as e:
-        logger.error("Error creating clinic: %s", e)
-        await db.rollback()
-        raise HTTPException(status_code=500, detail="Internal Server Error") from e
+    db_clinic = Clinic(name=clinic.name, address=clinic.address)
+    db.add(db_clinic)
+    await db.commit()
+    await db.refresh(db_clinic)
+    return db_clinic
 
 
 # изменнение клиники
@@ -59,37 +53,23 @@ async def create_clinic(clinic: ClinicSchema, db: AsyncSession = Depends(async_g
 async def update_clinic(
     clinic_id: int, clinic: ClinicSchema, db: AsyncSession = Depends(async_get_db)
 ):
-    try:
-        result = await db.execute(select(Clinic).filter(Clinic.id == clinic_id))
-        db_clinic = result.scalars().first()
-        if db_clinic is None:
-            raise HTTPException(status_code=404, detail="Clinic not found")
-        db_clinic.name = clinic.name
-        db_clinic.address = clinic.address
-        await db.commit()
-        await db.refresh(db_clinic)
-        return db_clinic
-    except Exception as e:
-        logger.error("Error updating clinic with id=%s: %s", clinic_id, e)
-        await db.rollback()
-        raise HTTPException(status_code=500, detail="Internal Server Error") from e
+    db_clinic = await db.get(Clinic, clinic_id)
+    if not db_clinic:
+        raise HTTPException(status_code=404, detail="Clinic not found")
+    db_clinic.name = clinic.name
+    db_clinic.address = clinic.address
+    await db.commit()
+    await db.refresh(db_clinic)
+    return db_clinic
 
 
 # удаление клиники
 @router.delete("/clinics/{clinic_id}", response_model=dict)
 async def delete_clinic(clinic_id: int, db: AsyncSession = Depends(async_get_db)):
-    try:
-        result = await db.execute(select(Clinic).filter(Clinic.id == clinic_id))
-        db_clinic = result.scalars().first()
-        if db_clinic is None:
-            raise HTTPException(status_code=404, detail="Clinic not found")
-
-        await db.delete(db_clinic)
-        await db.commit()
-
-        logger.info("Clinic with id=%s has been deleted.", clinic_id)
-        return {"detail": f"Clinic with id={clinic_id} deleted successfully"}
-    except Exception as e:
-        logger.error("Error deleting clinic with id=%s: %s", clinic_id, e)
-        await db.rollback()
-        raise HTTPException(status_code=500, detail="Internal Server Error") from e
+    db_clinic = await db.get(Clinic, clinic_id)
+    if not db_clinic:
+        raise HTTPException(status_code=404, detail="Clinic not found")
+    await db.delete(db_clinic)
+    await db.commit()
+    logger.info("Clinic with id=%s has been deleted.", clinic_id)
+    return {"detail": f"Clinic with id={clinic_id} deleted successfully"}
