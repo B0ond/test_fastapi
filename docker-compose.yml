@@ -10,17 +10,15 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-      TEST_DB_NAME: ${TEST_DB_NAME} # новая переменная для тестовой БД
       DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
-      TEST_DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@db:5432/${TEST_DB_NAME} # новый URL для тестовой БД
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - testdb # Dependency on the test database
     volumes:
       - ./app:/app/app
-    command: [ "/bin/bash", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000" ]
-    #["/bin/bash", "-c", "pytest && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    command: [ "/bin/bash", "-c", "pytest || true && uvicorn app.main:app --host 0.0.0.0 --port 8000" ]
 
   db:
     image: postgres:15
@@ -36,5 +34,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  testdb:
+    image: postgres:15
+    container_name: test_postgres_db
+    environment:
+      POSTGRES_USER: test_user # Different user for testing
+      POSTGRES_PASSWORD: test_password # Different password for testing
+      POSTGRES_DB: test_db # Different database for testing
+    ports:
+      - "5433:5432" # Expose a different port for the test database
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data
+
 volumes:
   postgres_data:
+  test_postgres_data:
