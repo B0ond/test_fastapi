@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 async def create_tables():
     async with engine.begin() as conn:
         logger.info("Создание таблиц...")
-        await conn.run_sync(Base.metadata.create_all)  # Создает все таблицы
+        await conn.run_sync(Base.metadata.create_all) 
         logger.info("Таблицы созданы")
 
 

@@ -12,7 +12,7 @@ from httpx import AsyncClient, ASGITransport
 from dotenv import load_dotenv
 
 from app.database import Base, async_get_db
-from app.main import app  # Ваше приложение FastAPI
+from app.main import app 
 
 load_dotenv()
 
@@ -30,7 +30,7 @@ def async_engine(postgresql: pytest_postgresql.janitor):
 # Фикстура для создания и удаления таблиц
 @pytest_asyncio.fixture(
     scope="function", autouse=True
-)  # Изменили область на "function"
+)  
 async def create_test_database(async_engine):
     try:
         async with async_engine.begin() as conn:
@@ -52,12 +52,12 @@ async def test_db(async_engine) -> AsyncGenerator[AsyncSession, None]:
         await session.rollback()  # Откат изменений после каждого теста
 
 
-# Фикстура для клиента FastAPI
+
 @pytest_asyncio.fixture
 async def async_client(test_db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(
         base_url="http://test",
-        transport=ASGITransport(app=app),  # Use ASGITransport
+        transport=ASGITransport(app=app),
     ) as client:
         app.dependency_overrides[async_get_db] = lambda: test_db
         yield client

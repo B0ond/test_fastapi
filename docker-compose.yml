@@ -15,7 +15,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
-      - testdb # Dependency on the test database
+      - testdb 
     volumes:
       - ./app:/app/app
     command: [ "/bin/bash", "-c", "pytest || true && uvicorn app.main:app --host 0.0.0.0 --port 8000" ]
@@ -38,11 +38,11 @@ services:
     image: postgres:15
     container_name: test_postgres_db
     environment:
-      POSTGRES_USER: test_user # Different user for testing
-      POSTGRES_PASSWORD: test_password # Different password for testing
-      POSTGRES_DB: test_db # Different database for testing
+      POSTGRES_USER: test_user 
+      POSTGRES_PASSWORD: test_password 
+      POSTGRES_DB: test_db
     ports:
-      - "5433:5432" # Expose a different port for the test database
+      - "5433:5432"
     volumes:
       - test_postgres_data:/var/lib/postgresql/data
 

@@ -5,7 +5,6 @@ from ..models import Doctor, Clinic
 from ..schemas import DoctorSchema
 
 
-# Вспомогательные функции
 async def get_all_doctors(db: AsyncSession):
     """Получить список всех докторов."""
     result = await db.execute(select(Doctor))
